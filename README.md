@@ -1,1 +1,1 @@
-# miraeasset_ai
+# miraeasset-ai
