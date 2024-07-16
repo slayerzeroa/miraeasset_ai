@@ -1,106 +1,163 @@
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+import pandas as pd
+
+from sentence_transformers import SentenceTransformer
 
 
-# Python3 program for stable marriage problem
- 
-# Number of Men or Women
-N = 4
- 
-# This function returns true if 
-# woman 'w' prefers man 'm1' over man 'm'
-def wPrefersM1OverM(prefer, w, m, m1):
-     
-    # Check if w prefers m over her 
-    # current engagement m1
-    for i in range(N):
-         
-        # If m1 comes before m in list of w, 
-        # then w prefers her current engagement,
-        # don't do anything
-        if (prefer[w][i] == m1):
-            return True
- 
-        # If m comes before m1 in w's list, 
-        # then free her current engagement 
-        # and engage her with m
-        if (prefer[w][i] == m):
-            return False
- 
-# Prints stable matching for N boys and N girls. 
-# Boys are numbered as 0 to N-1. 
-# Girls are numbered as N to 2N-1.
-def stableMarriage(prefer):
-     
-    # Stores partner of women. This is our output 
-    # array that stores passing information. 
-    # The value of wPartner[i] indicates the partner 
-    # assigned to woman N+i. Note that the woman numbers 
-    # between N and 2*N-1. The value -1 indicates 
-    # that (N+i)'th woman is free
-    wPartner = [-1 for i in range(N)]
- 
-    # An array to store availability of men. 
-    # If mFree[i] is false, then man 'i' is free,
-    # otherwise engaged.
-    mFree = [False for i in range(N)]
- 
-    freeCount = N
- 
-    # While there are free men
-    while (freeCount > 0):
-         
-        # Pick the first free man (we could pick any)
-        m = 0
-        while (m < N):
-            if (mFree[m] == False):
-                break
-            m += 1
- 
-        # One by one go to all women according to 
-        # m's preferences. Here m is the picked free man
-        i = 0
-        while i < N and mFree[m] == False:
-            w = prefer[m][i]
- 
-            # The woman of preference is free, 
-            # w and m become partners (Note that 
-            # the partnership maybe changed later). 
-            # So we can say they are engaged not married
-            if (wPartner[w - N] == -1):
-                wPartner[w - N] = m
-                mFree[m] = True
-                freeCount -= 1
- 
-            else: 
-                 
-                # If w is not free
-                # Find current engagement of w
-                m1 = wPartner[w - N]
- 
-                # If w prefers m over her current engagement m1,
-                # then break the engagement between w and m1 and
-                # engage m with w.
-                if (wPrefersM1OverM(prefer, w, m, m1) == False):
-                    wPartner[w - N] = m
-                    mFree[m] = True
-                    mFree[m1] = False
-            i += 1
- 
-            # End of Else
-        # End of the for loop that goes 
-        # to all women in m's list
-    # End of main while loop
- 
-    # Print solution
-    print("Woman ", " Man")
-    for i in range(N):
-        print(i + N, "\t", wPartner[i])
- 
-# Driver Code
-prefer = [[7, 5, 6, 4], [5, 7, 6, 4],
-          [4, 5, 6, 7], [4, 6, 5, 7],
-          [0, 1, 2, 3], [0, 1, 2, 3],
-          [0, 1, 2, 3], [0, 1, 2, 3]]
- 
-stableMarriage(prefer)
- 
-# This code is contributed by Mohit Kumar
+class marriage_algo():
+    '''
+    Stable Marriage Algorithm
+    두 그룹 모두 가장 최선의 선택을 하는 경우에 안정적인 결과를 보장하는 알고리즘
+
+    input: prefer matrix
+    output: stable matching result
+    '''
+    def __init__(self, prefer):
+        self.prefer = prefer
+        self.N = len(prefer)//2
+        self.wPartner = None
+        self.mFree = None
+        self.freeCount = None
+
+    def wPrefersM1OverM(self, w, m, m1):
+        for i in range(self.N):
+            if (self.prefer[w][i] == m1):
+                return True
+            if (self.prefer[w][i] == m):
+                return False
+
+
+    def stableMarriage(self):
+        self.wPartner = [-1 for _ in range(self.N)]
+        self.mFree = [False for _ in range(self.N)]
+        self.freeCount = self.N
+        while (self.freeCount > 0):
+            m = 0
+            while (m < self.N):
+                if (self.mFree[m] == False):
+                    break
+                m += 1
+            i = 0
+            while i < self.N and self.mFree[m] == False:
+                w = self.prefer[m][i]
+                if (self.wPartner[w - self.N] == -1):
+                    self.wPartner[w - self.N] = m
+                    self.mFree[m] = True
+                    self.freeCount -= 1
+    
+                else: 
+
+                    m1 = self.wPartner[w - self.N]
+
+                    if (self.wPrefersM1OverM(w, m, m1) == False):
+                        self.wPartner[w - self.N] = m
+                        self.mFree[m] = True
+                        self.mFree[m1] = False
+                i += 1
+        
+        result = []
+        for i in range(self.N):
+            result.append([i + self.N, self.wPartner[i]])
+
+        return result
+
+
+# # Driver Code
+# prefer = [[4, 5, 7, 6], [5, 7, 6, 4],
+#           [4, 5, 6, 7], [5, 6, 4, 7],
+#           [1, 0, 2, 3], [2, 1, 0, 3],
+#           [3, 1, 2, 0], [2, 1, 3, 0]]
+
+# marriage = marriage_algo(prefer)
+# print("Left: Woman ", "Right: Man")
+# print(marriage.stableMarriage())
+
+
+
+
+# customer: [age, sex, address, job, asset, family_size, tendency, education]
+# pb: 선호하는[age, sex, address, job, asset, family_size, tendency, education]
+
+def pb_customer_matching(customer:list, pb:list) -> list:
+    '''
+    PB와 Customer의 선호 Query를 비교하여 가장 유사한 매칭을 찾는 함수
+    '''
+    pb_vector = transformer_sentence_embedding(pb)
+    customer_vector = transformer_sentence_embedding(customer)
+    
+    similarity_matrix = cosine_similarity(customer_vector, pb_vector)
+
+    # 코사인 유사도 매트릭스를 통해 각 고객과 가장 유사한 PB를 찾기
+    matches = []
+    for customer_idx, customer_similarities in enumerate(similarity_matrix):
+        pb_idx = np.argmax(customer_similarities)
+        matches.append((customer_idx, pb_idx, customer_similarities[pb_idx]))
+
+    return matches
+
+
+def pb_customer_prefer(customer:list, pb:list) -> list:
+    '''
+    PB와 Customer의 선호 Query를 비교하여 선호도 벡터를 반환하는 함수
+    '''
+    customer_vector = transformer_sentence_embedding(customer)
+    pb_vector = transformer_sentence_embedding(pb)
+
+    similarity_matrix = cosine_similarity(customer_vector, pb_vector)
+    
+    customer_matrix = []
+    pb_matrix = []
+    for similarity in similarity_matrix:
+        cosine_similarity_dict = {}
+        for idx, sim in enumerate(similarity):
+            cosine_similarity_dict[idx] = sim
+
+        sorted_dict = sorted(cosine_similarity_dict.items(), key=lambda x: x[1], reverse=True)
+        customer_matrix.append([idx for idx, sim in sorted_dict])
+        pb_matrix.append([idx for idx, sim in sorted_dict])
+
+    pb_matrix = (np.array(pb_matrix) + len(pb)).tolist()
+    
+    result = []
+    result.extend(pb_matrix)
+    result.extend(customer_matrix)
+    return result
+
+
+
+
+def transformer_sentence_embedding(sentence)->list:
+    '''
+    문장 임베딩하는 함수
+    input: sentence (str or list)
+    output: embeddings (np.array)
+    '''
+    if type(sentence) == str:
+        sentence = [sentence] 
+    model = SentenceTransformer('distiluse-base-multilingual-cased')
+    embeddings = model.encode(sentence)
+    return embeddings
+
+
+
+# # 고객이 원하는 PB에 대한 인상들, 조건들을 그냥 문장으로 설명하면
+# # -> 문장을 Transformer Sentence Embedding? -> 벡터화하고
+# # PB쪽에서 설문 돌려서 벡터화
+
+# customer = ['나이가 30대인 여성이고, 주소는 강동구이며, 직업은 은행원이고, 자산은 11552원이고, 가족 수는 3명이고, 성향은 1이고, 학력 대학교 졸업입니다.',
+#             '나이가 42세인 남성이고, 주소는 송파구이며, 직업은 회사원이고, 자산은 42000원이고, 가족 수는 2명이고, 성향은 5이고, 학력은 1입니다.',
+#             '나이가 52세인 남성이고, 주소는 강남구이며, 직업은 사업가이고, 자산은 1142000원이고, 가족 수는 6명이고, 성향은 2이고, 학력은 4입니다.']
+# pb = ['나이가 50대인 남성이고, 주소는 강남구이며, 직업은 회사원이고, 자산은 760000원이고, 가족 수는 3명이고, 성향은 3이고, 학력은 3입니다.',
+#       '나이가 30대인 여성이고, 주소는 강동구이며, 직업은 간호사이고, 자산은 11462원이고, 가족 수는 4명이고, 성향은 2이고, 학력은 3입니다.',
+#       '나이가 20대인 여성이고, 주소는 강서구이며, 직업은 변호사이고, 자산은 1642662원이고, 가족 수는 2명이고, 성향은 1이고, 학력은 5입니다.']
+
+
+# # 선호도 Matrix에서는 리스트를 절반으로 나누고 앞에 있는 것들이 PB의 Customer에 대한 선호도 리스트, 뒤에 있는 것들이 Customer의 PB에 대한 선호도 리스트
+# matrix = pb_customer_prefer(customer, pb)
+# print(matrix)
+
+# # Matching 결과에서는 각 리스트에서 앞에 있는 것이 Customer, 뒤에 있는 것이 PB
+# marriage = marriage_algo(matrix)
+# print("Left: Customer의 번호 ", "Right: PB의 번호")
+# print(marriage.stableMarriage())

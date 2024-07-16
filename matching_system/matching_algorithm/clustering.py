@@ -23,31 +23,35 @@ df = df.fillna(0)
 # 60대 이상
 df = df[df['생년월일'] <= 1964]
 
-print(len(df))
-
-# # 여 == 1, 남 == 0
-# df['성별'] = df['성별'].astype('category').cat.codes
+# 여 == 1, 남 == 0
+df['성별'] = df['성별'].astype('category').cat.codes
 
 
-# plt.scatter(df['자치구명'], df['총자산평가금액'])
-# plt.xlabel('자치구명')
-# plt.ylabel('총자산평가금액')
-# plt.xticks(rotation=90)
-# plt.show()
+plt.scatter(df['자치구명'], df['총자산평가금액'])
+plt.xlabel('자치구명')
+plt.ylabel('총자산평가금액')
+plt.xticks(rotation=90)
+plt.show()
 
 
 # # categorical -> numerical
 # df['자치구명'] = df['자치구명'].astype('category').cat.codes
 
 
-# def initialise_model(model, params):
-#     for parameter, value in params.items():
-#         setattr(model, parameter, value)
-#     return model
+def initialise_model(model, params):
+    for parameter, value in params.items():
+        setattr(model, parameter, value)
+    return model
+
+pd.set_option('display.max_columns', None)
+
+print(df)
 
 
+test_df = df[['자치구명', '순자산평가금액', '성별', '카드소비금액']]
 
-# test_df = df[['자치구명', '순자산평가금액', '성별']]
+# # categorical -> numerical
+# test_df['자치구명'] = test_df['자치구명'].astype('category').cat.codes
 
 
 
@@ -61,19 +65,27 @@ print(len(df))
 
 # test_df['cluster'] = y_pred
 
+# test_df['자치구명'] = df['자치구명']
+
 # plt.scatter(test_df['자치구명'], test_df['순자산평가금액'], c=test_df['cluster'])
 # plt.xlabel('자치구명')
 # plt.ylabel('순자산평가금액')
+# plt.xticks(rotation=90)
 # plt.show()
 
 
-# # # KMeans
-# # params = {'n_clusters':5, 'init': 'k-means++', 'n_init': 10, 'max_iter': 3000, 'random_state': 10}
-# # kmeans = initialise_model(cluster.KMeans(), params).fit(df)
+# # KMeans
+# params = {'n_clusters':5, 'init': 'k-means++', 'n_init': 10, 'max_iter': 3000, 'random_state': 10}
+# kmeans = initialise_model(cluster.KMeans(), params).fit(test_df)
 
-# # y_pred = kmeans.predict(df)
+# y_pred = kmeans.predict(test_df)
 
-# # df['cluster'] = y_pred
+# test_df['cluster'] = y_pred
 
-# # plt.scatter(df['자치구명'], df['총자산평가금액'], c=df['cluster'])
-# # plt.show()
+# test_df['자치구명'] = df['자치구명']
+
+# plt.scatter(df['자치구명'], df['총자산평가금액'], c=df['cluster'])
+# plt.xlabel('자치구명')
+# plt.ylabel('순자산평가금액')
+# plt.xticks(rotation=90)
+# plt.show()
