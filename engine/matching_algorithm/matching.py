@@ -79,7 +79,7 @@ class marriage_algo():
 # customer: [age, sex, address, job, asset, family_size, tendency, education]
 # pb: 선호하는[age, sex, address, job, asset, family_size, tendency, education]
 
-def pb_customer_matching(customer:list, pb:list) -> list:
+def pb_customer_cosine_matching(pb:list, customer:list) -> list:
     '''
     PB와 Customer의 선호 Query를 비교하여 가장 유사한 매칭을 찾는 함수
     '''
@@ -97,12 +97,12 @@ def pb_customer_matching(customer:list, pb:list) -> list:
     return matches
 
 
-def pb_customer_prefer(customer:list, pb:list) -> list:
+def pb_customer_prefer(pb:list, customer:list) -> list:
     '''
     PB와 Customer의 선호 Query를 비교하여 선호도 벡터를 반환하는 함수
     '''
-    customer_vector = transformer_sentence_embedding(customer)
     pb_vector = transformer_sentence_embedding(pb)
+    customer_vector = transformer_sentence_embedding(customer)
 
     similarity_matrix = cosine_similarity(customer_vector, pb_vector)
     
