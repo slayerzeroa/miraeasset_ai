@@ -139,3 +139,4 @@ def main():
     print('news_url: ',len(final_urls))
     print('news_contents: ',len(news_contents))
     print('news_dates: ',len(news_dates))
+    print()
