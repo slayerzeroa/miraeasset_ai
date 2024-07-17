@@ -2,7 +2,7 @@
 
 ### 사용방법
 
-#### 그래프 시각화
+#### 그래프 시각화 실행
 
 - cd engine/matching_algorithm -> streamlit run test.py
 
