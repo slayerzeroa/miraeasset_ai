@@ -13,3 +13,22 @@
 #### Django 실행
 
 - cd web/mysite -> python manage.py runserver
+
+---
+
+### 파일구조
+
+├─engine
+│ ├─clustering_algorithm
+│ ├─data
+│ └─matching_algorithm
+├─summary
+└─web
+├─mysite
+│ ├─config
+│ └─pybo
+│ ├─static
+│ │ └─public
+│ └─templates
+│  
+ └─resource
