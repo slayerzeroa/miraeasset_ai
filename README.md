@@ -19,18 +19,19 @@
 ### 파일구조
 
 <!-- prettier-ignore-start -->
-├─engine </br>
-│ ├─clustering_algorithm </br>
-│ ├─data </br>
-│ └─matching_algorithm </br>
-├─summary </br>
-└─web </br>
-    ├─mysite </br>
-    │  ├─config </br>
-    │  └─pybo </br>
-    │      ├─static </br>
-    │      │  └─public </br>
-    │      └─templates </br>
-    │ </br>
-    └─resource </br>
+```
+├─engine
+│  ├─clustering_algorithm
+│  ├─data
+│  └─matching_algorithm
+├─summary
+└─web
+    ├─mysite
+    │  ├─config
+    │  └─pybo
+    │      ├─static
+    │      │  └─public
+    │      └─templates
+    └─resource
+```
 <!-- prettier-ignore-end -->
