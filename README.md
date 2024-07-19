@@ -19,16 +19,29 @@
 ### 파일구조
 
 ├─engine
+
 │ ├─clustering_algorithm
+
 │ ├─data
+
 │ └─matching_algorithm
+
 ├─summary
+
 └─web
-├─mysite
-│ ├─config
-│ └─pybo
-│ ├─static
-│ │ └─public
-│ └─templates
-│  
- └─resource
+
+    ├─mysite
+
+    │  ├─config
+
+    │  └─pybo
+
+    │      ├─static
+
+    │      │  └─public
+
+    │      └─templates
+
+    │
+
+    └─resource
