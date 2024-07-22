@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer-PB Matching Graph</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .node circle {
+            fill: #999;
+            stroke: #fff;
+            stroke-width: 3px;
+        }
+
+        .link {
+            fill: none;
+            stroke: #666;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Customer-PB Matching Graph</h1>
+    <svg width="960" height="600"></svg>
+    <script>
+        // JSON으로 전달된 데이터를 파싱합니다.
+        const customerIds = JSON.parse('{{ customer_ids|safe|escapejs }}');
+        const pbIds = JSON.parse('{{ pb_ids|safe|escapejs }}');
+        const connectionData = JSON.parse('{{ connections|safe|escapejs }}');
+
+        console.log("Customer IDs:", customerIds);
+        console.log("PB IDs:", pbIds);
+        console.log("Connections:", connectionData);
+
+        // 노드 생성
+        const nodes = [
+            ...customerIds.map(id => ({ id: `Customer_${id}`, group: 1 })),
+            ...pbIds.map(id => ({ id: `PB_${id}`, group: 2 }))
+        ];
+
+        // 링크 생성
+        const links = connectionData.map(([customer, pb]) => ({
+            source: `Customer_${customer}`,
+            target: `PB_${pb}`
+        }));
+
+        console.log("Nodes:", nodes);
+        console.log("Links:", links);
+
+        const svg = d3.select("svg");
+        const width = +svg.attr("width");
+        const height = +svg.attr("height");
+
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links).id(d => d.id))
+            .force("charge", d3.forceManyBody().strength(-100)) // Strength 조정
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        const link = svg.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("class", "link");
+
+        const node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(nodes)
+            .enter().append("circle")
+            .attr("r", 10)
+            .attr("class", "node");
+
+        node.append("title")
+            .text(d => d.id);
+
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+        });
+    </script>
+</body>
+</html>

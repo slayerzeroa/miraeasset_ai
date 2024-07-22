@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import crawling
 from django.template import loader
+import json
+from .matching_algorithm.matching import test
 
 '''def index(request):
     news_list = crawling.objects.order_by('-date')
@@ -28,3 +30,17 @@ def easy_news(request) :
 
 def matching(request) :
     return render(request, 'matching.html')
+
+def graph(request):
+    # customer_ids = [1, 2, 3]
+    # pb_ids = [101, 102]
+    # connections = [(1, 101), (2, 102), (3, 101)]
+
+    pb_ids, customer_ids, connections = test()
+
+    context = {
+        'customer_ids': json.dumps(customer_ids),
+        'pb_ids': json.dumps(pb_ids),
+        'connections': json.dumps(connections)
+    }
+    return render(request, 'graph.html', context)
