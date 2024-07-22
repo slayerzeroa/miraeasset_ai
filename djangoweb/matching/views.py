@@ -16,7 +16,7 @@ def keyword(request):
         text_input = request.POST.get('text_input')
         # 여기서 text_input을 사용하여 원하는 처리를 수행합니다.
         return render(request, 'easy_news.html')
-    return render(request, 'keyword.html')
+    return render(request, 'matching.html')
 
 
 def service_detail(request) :
@@ -26,6 +26,5 @@ def easy_news(request) :
     return render(request, 'easy_news.html')
 
 
-def summary(request) :
-    return render(request, 'summary.html')
-
+def matching(request) :
+    return render(request, 'matching.html')

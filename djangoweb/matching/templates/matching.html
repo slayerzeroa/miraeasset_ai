@@ -18,13 +18,13 @@
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container px-5">
-                <a class="navbar-brand" href="#!">Senior Service</a>
+                <a class="navbar-brand" href="{% url 'main' %}">Senior Service</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">MyPage</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Services</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'main' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main' %}">MyPage</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main' %}">Services</a></li>
                     </ul>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                             <!-- Page heading-->
                             <h1 class="mb-5">관심있는 키워드를 넣어주세요!</h1>
                             <!-- Signup form-->
-                            <form class="form-subscribe" id="contactForm" method="post" action="{% url 'keyword' %}">
+                            <form class="form-subscribe" id="contactForm" method="post" action="{% url 'matching' %}">
                                 {% csrf_token %}
                                 <!-- Text input-->
                                 <div class="row">
