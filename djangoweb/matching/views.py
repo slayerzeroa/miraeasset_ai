@@ -4,6 +4,8 @@ from .models import crawling
 from django.template import loader
 import json
 from .matching_algorithm.matching import test
+from django.shortcuts import get_object_or_404, redirect
+
 
 '''def index(request):
     news_list = crawling.objects.order_by('-date')
