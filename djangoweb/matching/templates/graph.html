@@ -1,90 +1,187 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer-PB Matching Graph</title>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <style>
-        .node circle {
-            fill: #999;
-            stroke: #fff;
-            stroke-width: 3px;
-        }
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>미래에셋 FIT Senior Service</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <!-- D3.js -->
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-family: Arial, sans-serif;
+            }
 
-        .link {
-            fill: none;
-            stroke: #666;
-            stroke-width: 2px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Customer-PB Matching Graph</h1>
-    <svg width="960" height="600"></svg>
-    <script>
-        // JSON으로 전달된 데이터를 파싱합니다.
-        const customerIds = JSON.parse('{{ customer_ids|safe|escapejs }}');
-        const pbIds = JSON.parse('{{ pb_ids|safe|escapejs }}');
-        const connectionData = JSON.parse('{{ connections|safe|escapejs }}');
+            h1 {
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                margin: 20px 0;
+            }
 
-        console.log("Customer IDs:", customerIds);
-        console.log("PB IDs:", pbIds);
-        console.log("Connections:", connectionData);
+            .graph-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+            }
 
-        // 노드 생성
-        const nodes = [
-            ...customerIds.map(id => ({ id: `Customer_${id}`, group: 1 })),
-            ...pbIds.map(id => ({ id: `PB_${id}`, group: 2 }))
-        ];
+            .node circle {
+                stroke: #fff;
+                stroke-width: 3px;
+            }
 
-        // 링크 생성
-        const links = connectionData.map(([customer, pb]) => ({
-            source: `Customer_${customer}`,
-            target: `PB_${pb}`
-        }));
+            .link {
+                fill: none;
+                stroke: #666;
+                stroke-width: 2px;
+            }
 
-        console.log("Nodes:", nodes);
-        console.log("Links:", links);
+            .tooltip {
+                position: absolute;
+                text-align: center;
+                width: auto;
+                height: auto;
+                padding: 10px;
+                font: 12px sans-serif;
+                background: lightsteelblue;
+                border: 0px;
+                border-radius: 8px;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Responsive navbar-->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container px-5">
+                <a class="navbar-brand" href="{% url 'main' %}">Senior Service</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'main' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main' %}">MyPage</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main' %}">Services</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <h1>Customer-PB Matching Graph</h1>
+        <div class="graph-container">
+            <svg width="960" height="600"></svg>
+        </div>
+        <div class="tooltip" id="tooltip"></div>
+        
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container px-5"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts.js' %}"></script>
 
-        const svg = d3.select("svg");
-        const width = +svg.attr("width");
-        const height = +svg.attr("height");
+        <script>
+            // JSON으로 전달된 데이터를 파싱합니다.
+            const customerIds = JSON.parse('{{ customer_ids|safe|escapejs }}');
+            const pbIds = JSON.parse('{{ pb_ids|safe|escapejs }}');
+            const connectionData = JSON.parse('{{ connections|safe|escapejs }}');
 
-        const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id))
-            .force("charge", d3.forceManyBody().strength(-100)) // Strength 조정
-            .force("center", d3.forceCenter(width / 2, height / 2));
+            console.log("Customer IDs:", customerIds);
+            console.log("PB IDs:", pbIds);
+            console.log("Connections:", connectionData);
 
-        const link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(links)
-            .enter().append("line")
-            .attr("class", "link");
+            // 노드 색상 설정
+            const color = d3.scaleOrdinal()
+                .domain([1, 2])
+                .range(["#aec6cf", "#ffb347"]); // 파스텔 색상 설정 (파란색, 주황색)
 
-        const node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(nodes)
-            .enter().append("circle")
-            .attr("r", 10)
-            .attr("class", "node");
+            // 노드 생성
+            const nodes = [
+                ...customerIds.map(id => ({ id: `Customer_${id}`, group: 1 })),
+                ...pbIds.map(id => ({ id: `PB_${id}`, group: 2 }))
+            ];
 
-        node.append("title")
-            .text(d => d.id);
+            // 링크 생성
+            const links = connectionData.map(([customer, pb]) => ({
+                source: `Customer_${customer}`,
+                target: `PB_${pb}`
+            }));
 
-        simulation.on("tick", () => {
-            link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
+            console.log("Nodes:", nodes);
+            console.log("Links:", links);
 
-            node
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-        });
-    </script>
-</body>
+            const svg = d3.select("svg");
+            const width = +svg.attr("width");
+            const height = +svg.attr("height");
+
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id))
+                .force("charge", d3.forceManyBody().strength(-100)) // Strength 조정
+                .force("center", d3.forceCenter(width / 2, height / 2));
+
+            // 툴팁 설정
+            const tooltip = d3.select("#tooltip");
+
+            const link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(links)
+                .enter().append("line")
+                .attr("class", "link");
+
+            const node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(nodes)
+                .enter().append("circle")
+                .attr("r", 10)
+                .attr("class", "node")
+                .attr("fill", d => color(d.group))
+                .on("mouseover", function(event, d) {
+                    tooltip.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    tooltip.html("ID: " + d.id)
+                        .style("background", color(d.group)) // 툴팁 배경색 노드 색상에 맞춤
+                        .style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mousemove", function(event) {
+                    tooltip.style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+            });
+        </script>
+    </body>
 </html>
