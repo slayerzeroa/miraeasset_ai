@@ -56,7 +56,26 @@
                 </div>
             </div>
         </header>
-
+        <!-- Articles Section -->
+        <section class="articles-section">
+            <div class="container">
+                {% if articles %}
+                    <h2 class="text-center my-5">뉴스 기사 요약</h2>
+                    <ul class="list-unstyled">
+                        <!-- {% for article in articles %} -->
+                            <li class="media my-4">
+                                <div class="media-body">
+                                    <h5 class="mt-0 mb-1">{{ articles.title }}</h5>
+                                    {{ articles.content }}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-center my-5">키워드를 입력하여 뉴스를 검색하세요.</p>
+                {% endif %}
+            </div>
+        </section>
         <!-- Footer-->
         <footer class="py-5 bg-dark">
             <div class="container px-5"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
