@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .models import crawling
 from django.template import loader
 import json
-from .matching_algorithm.matching import test
+# from .matching_algorithm.matching import test
 from django.shortcuts import get_object_or_404, redirect
 
 
@@ -38,11 +38,12 @@ def graph(request):
     # pb_ids = [101, 102]
     # connections = [(1, 101), (2, 102), (3, 101)]
 
-    pb_ids, customer_ids, connections = test()
+    # pb_ids, customer_ids, connections = test()
 
-    context = {
-        'customer_ids': json.dumps(customer_ids),
-        'pb_ids': json.dumps(pb_ids),
-        'connections': json.dumps(connections)
-    }
-    return render(request, 'graph.html', context)
+    # context = {
+    #     'customer_ids': json.dumps(customer_ids),
+    #     'pb_ids': json.dumps(pb_ids),
+    #     'connections': json.dumps(connections)
+    # }
+    # return render(request, 'graph.html', context)
+    return render(request, 'graph.html')

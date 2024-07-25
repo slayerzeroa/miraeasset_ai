@@ -84,9 +84,13 @@ def get_sentence_embedding(sentence: str):
     '''
     리스트 벡터를 문자열로 만드는 함수
     '''
-    model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
-
-    return str(model.encode(sentence))[1:-1]
+    model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2').to(device)
+    embedding = model.encode(sentence)
+    
+    # 리스트 벡터를 문자열로 변환하면서 \n 제거
+    embedding_str = ','.join(map(str, embedding))
+    
+    return embedding_str
 
 def transfrom_string_to_vector(str_vector:str):
     '''
@@ -109,7 +113,7 @@ def generate_customer_description(customer_data):
 # 고객 설명과 임베딩 생성
 def generate_customer_data(df):
     # 모델 불러오기 및 GPU 설정
-    model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2').to(device)
+    model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2').to(device)
     
     df['description'] = df.apply(generate_customer_description, axis=1)
     df['embedding'] = df['description'].apply(lambda x: get_sentence_embedding(x))
@@ -118,15 +122,15 @@ def generate_customer_data(df):
 
 
 
-# '''유튜브 데이터베이스 업데이트'''
-# df = pd.read_csv('./engine/data/youtube_data.csv')
-# df = df.drop(df.columns[0], axis=1)
-# df['embedding'] = df['embedding'].apply(lambda x: x[1:-1])
-# print(df)
-# make_table(df, 'youtube')
+'''유튜브 데이터베이스 업데이트'''
+df = pd.read_csv('./engine/data/youtube_data.csv')
+df = df.drop(df.columns[0], axis=1)
+df['embedding'] = df['embedding'].apply(lambda x: x[1:-1])
+print(df)
+make_table(df, 'youtube')
 
 
-# pd.set_option('display.max_columns', None)
+# # pd.set_option('display.max_columns', None)
 # '''고객 데이터베이스 업데이트'''
 # df = pd.read_csv('./engine/data/customer_data.csv') 
 # df = generate_customer_data(df)
