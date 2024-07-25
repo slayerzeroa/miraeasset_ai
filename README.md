@@ -24,6 +24,7 @@
 2. 요약
 - cd summary -> python news_summary.py
     - 사용자가 요약 버튼 클릭하면 해당되는 id의 text를 news_crawling_sorted.json 에서 검색
+    - 결과 json 파일 저장 (id, summary)
     - 10 ~ 12초 정도 걸림
 
 #### 유튜브 추천시스템 실행
