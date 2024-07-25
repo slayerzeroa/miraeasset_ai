@@ -8,4 +8,5 @@ urlpatterns = [
     path('summary/', include('summary.urls'), name='summary'),
     path("admin/", admin.site.urls, name='admin'),
     path("matching/", include("matching.urls"), name='matching'),
+    path("community/", include("community.urls"), name='community'),
 ]
