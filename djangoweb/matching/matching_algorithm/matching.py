@@ -1,8 +1,8 @@
-from sklearn.metrics.pairwise import cosine_similarity
+# from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pandas as pd
 
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
 
 
 class marriage_algo():
@@ -79,91 +79,91 @@ class marriage_algo():
 # customer: [age, sex, address, job, asset, family_size, tendency, education]
 # pb: 선호하는[age, sex, address, job, asset, family_size, tendency, education]
 
-def pb_customer_cosine_matching(pb:list, customer:list) -> list:
-    '''
-    PB와 Customer의 선호 Query를 비교하여 가장 유사한 매칭을 찾는 함수
-    '''
-    pb_vector = transformer_sentence_embedding(pb)
-    customer_vector = transformer_sentence_embedding(customer)
+# def pb_customer_cosine_matching(pb:list, customer:list) -> list:
+#     '''
+#     PB와 Customer의 선호 Query를 비교하여 가장 유사한 매칭을 찾는 함수
+#     '''
+#     pb_vector = transformer_sentence_embedding(pb)
+#     customer_vector = transformer_sentence_embedding(customer)
     
-    similarity_matrix = cosine_similarity(customer_vector, pb_vector)
+#     similarity_matrix = cosine_similarity(customer_vector, pb_vector)
 
-    # 코사인 유사도 매트릭스를 통해 각 고객과 가장 유사한 PB를 찾기
-    matches = []
-    for customer_idx, customer_similarities in enumerate(similarity_matrix):
-        pb_idx = np.argmax(customer_similarities)
-        matches.append((customer_idx, pb_idx, customer_similarities[pb_idx]))
+#     # 코사인 유사도 매트릭스를 통해 각 고객과 가장 유사한 PB를 찾기
+#     matches = []
+#     for customer_idx, customer_similarities in enumerate(similarity_matrix):
+#         pb_idx = np.argmax(customer_similarities)
+#         matches.append((customer_idx, pb_idx, customer_similarities[pb_idx]))
 
-    return matches
+#     return matches
 
 
-def pb_customer_prefer(pb:list, customer:list) -> list:
-    '''
-    PB와 Customer의 선호 Query를 비교하여 선호도 벡터를 반환하는 함수
-    '''
-    pb_vector = transformer_sentence_embedding(pb)
-    customer_vector = transformer_sentence_embedding(customer)
+# def pb_customer_prefer(pb:list, customer:list) -> list:
+#     '''
+#     PB와 Customer의 선호 Query를 비교하여 선호도 벡터를 반환하는 함수
+#     '''
+#     pb_vector = transformer_sentence_embedding(pb)
+#     customer_vector = transformer_sentence_embedding(customer)
 
-    similarity_matrix = cosine_similarity(customer_vector, pb_vector)
+#     similarity_matrix = cosine_similarity(customer_vector, pb_vector)
     
-    customer_matrix = []
-    pb_matrix = []
-    for similarity in similarity_matrix:
-        cosine_similarity_dict = {}
-        for idx, sim in enumerate(similarity):
-            cosine_similarity_dict[idx] = sim
+#     customer_matrix = []
+#     pb_matrix = []
+#     for similarity in similarity_matrix:
+#         cosine_similarity_dict = {}
+#         for idx, sim in enumerate(similarity):
+#             cosine_similarity_dict[idx] = sim
 
-        sorted_dict = sorted(cosine_similarity_dict.items(), key=lambda x: x[1], reverse=True)
-        customer_matrix.append([idx for idx, sim in sorted_dict])
-        pb_matrix.append([idx for idx, sim in sorted_dict])
+#         sorted_dict = sorted(cosine_similarity_dict.items(), key=lambda x: x[1], reverse=True)
+#         customer_matrix.append([idx for idx, sim in sorted_dict])
+#         pb_matrix.append([idx for idx, sim in sorted_dict])
 
-    pb_matrix = (np.array(pb_matrix) + len(pb)).tolist()
+#     pb_matrix = (np.array(pb_matrix) + len(pb)).tolist()
     
-    result = []
-    result.extend(pb_matrix)
-    result.extend(customer_matrix)
-    return result
+#     result = []
+#     result.extend(pb_matrix)
+#     result.extend(customer_matrix)
+#     return result
 
 
 
 
-def transformer_sentence_embedding(sentence)->list:
-    '''
-    문장 임베딩하는 함수
-    input: sentence (str or list)
-    output: embeddings (np.array)
-    '''
-    if type(sentence) == str:
-        sentence = [sentence] 
-    model = SentenceTransformer('distiluse-base-multilingual-cased')
-    embeddings = model.encode(sentence)
-    return embeddings
+# def transformer_sentence_embedding(sentence)->list:
+#     '''
+#     문장 임베딩하는 함수
+#     input: sentence (str or list)
+#     output: embeddings (np.array)
+#     '''
+#     if type(sentence) == str:
+#         sentence = [sentence] 
+#     model = SentenceTransformer('distiluse-base-multilingual-cased')
+#     embeddings = model.encode(sentence)
+#     return embeddings
 
 
-def test():
-    customer = ['나이가 30대인 여성이고, 주소는 강동구이며, 직업은 은행원이고, 자산은 11552원이고, 가족 수는 3명이고, 성향은 1이고, 학력 대학교 졸업입니다.',
-                '나이가 42세인 남성이고, 주소는 송파구이며, 직업은 회사원이고, 자산은 42000원이고, 가족 수는 2명이고, 성향은 5이고, 학력은 1입니다.',
-                '나이가 52세인 남성이고, 주소는 강남구이며, 직업은 사업가이고, 자산은 1142000원이고, 가족 수는 6명이고, 성향은 2이고, 학력은 4입니다.']
-    pb = ['나이가 50대인 남성이고, 주소는 강남구이며, 직업은 회사원이고, 자산은 760000원이고, 가족 수는 3명이고, 성향은 3이고, 학력은 3입니다.',
-        '나이가 30대인 여성이고, 주소는 강동구이며, 직업은 간호사이고, 자산은 11462원이고, 가족 수는 4명이고, 성향은 2이고, 학력은 3입니다.',
-        '나이가 20대인 여성이고, 주소는 강서구이며, 직업은 변호사이고, 자산은 1642662원이고, 가족 수는 2명이고, 성향은 1이고, 학력은 5입니다.']
+# def test():
+#     customer = ['나이가 30대인 여성이고, 주소는 강동구이며, 직업은 은행원이고, 자산은 11552원이고, 가족 수는 3명이고, 성향은 1이고, 학력 대학교 졸업입니다.',
+#                 '나이가 42세인 남성이고, 주소는 송파구이며, 직업은 회사원이고, 자산은 42000원이고, 가족 수는 2명이고, 성향은 5이고, 학력은 1입니다.',
+#                 '나이가 52세인 남성이고, 주소는 강남구이며, 직업은 사업가이고, 자산은 1142000원이고, 가족 수는 6명이고, 성향은 2이고, 학력은 4입니다.']
+#     pb = ['나이가 50대인 남성이고, 주소는 강남구이며, 직업은 회사원이고, 자산은 760000원이고, 가족 수는 3명이고, 성향은 3이고, 학력은 3입니다.',
+#         '나이가 30대인 여성이고, 주소는 강동구이며, 직업은 간호사이고, 자산은 11462원이고, 가족 수는 4명이고, 성향은 2이고, 학력은 3입니다.',
+#         '나이가 20대인 여성이고, 주소는 강서구이며, 직업은 변호사이고, 자산은 1642662원이고, 가족 수는 2명이고, 성향은 1이고, 학력은 5입니다.']
     
-    prefer = pb_customer_prefer(pb, customer)
-    marriage = marriage_algo(prefer)
+#     prefer = pb_customer_prefer(pb, customer)
+#     marriage = marriage_algo(prefer)
 
-    # 인덱스 맞추기
-    result = []
-    for match in marriage.stableMarriage():
-        match[0] -= len(customer)
-        result.append(match)
+#     # 인덱스 맞추기
+#     result = []
+#     for match in marriage.stableMarriage():
+#         match[0] -= len(customer)
+#         result.append(match)
 
-    # PB, Customer의 노드 ID 생성
-    pb_ids = [i for i in range(len(pb))]
-    customer_ids = [i for i in range(len(customer))]
+#     # PB, Customer의 노드 ID 생성
+#     pb_ids = [i for i in range(len(pb))]
+#     customer_ids = [i for i in range(len(customer))]
 
-    connections = result
+#     connections = result
 
-    return pb_ids, customer_ids, connections
+#     return pb_ids, customer_ids, connections
 
 
 # # 고객이 원하는 PB에 대한 인상들, 조건들을 그냥 문장으로 설명하면
