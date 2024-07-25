@@ -25,6 +25,9 @@
 │  ├─data
 │  └─matching_algorithm
 ├─summary
+│   ├─ClovaX_Executor
+│   ├─crawling_module
+│   └─뉴스요약
 └─web
     ├─mysite
     │  ├─config
