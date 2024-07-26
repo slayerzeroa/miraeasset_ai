@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     # path('', views.keyword, name='keyword'),
     #path('<int:id>/', views.detail, name='detail'), <>는 변수를 의미하고 이 부분에 해당하는 값을 뷰에 인자로 전달
-    path('easy_version/', views.easy_news, name='easy_news'),
+    #path('easy_version/', views.easy_news, name='easy_news'),
     path('', views.matching, name='matching'),
     path('graph/', views.graph, name='graph'),
 ]

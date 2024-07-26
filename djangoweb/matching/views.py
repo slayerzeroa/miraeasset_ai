@@ -15,12 +15,12 @@ from django.shortcuts import get_object_or_404, redirect
     }
     return HttpResponse(render(context, request))'''
 
-def keyword(request):
+'''def keyword(request):
     if request.method == 'POST':
         text_input = request.POST.get('text_input')
         # 여기서 text_input을 사용하여 원하는 처리를 수행합니다.
         return render(request, 'easy_news.html')
-    return render(request, 'matching.html')
+    return render(request, 'matching.html')'''
 
 
 def service_detail(request) :
