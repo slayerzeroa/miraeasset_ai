@@ -13,20 +13,8 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
     <script>
-        function getSummary(postId) {
-            fetch(`/summary/easy_version/${postId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.summary) {
-                        document.getElementById(`summary-${postId}`).innerText = data.summary;
-                    } else {
-                        document.getElementById(`summary-${postId}`).innerText = "요약을 가져오는 데 실패했습니다.";
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById(`summary-${postId}`).innerText = "요약을 가져오는 데 실패했습니다.";
-                });
+        function displaySummary(postId, summaryText) {
+            document.getElementById(`summary-${postId}`).innerText = summaryText;
         }
     </script>
 </head>
@@ -73,7 +61,7 @@
                         <p class="post-meta">
                             Posted on {{ post.date }}
                         </p>
-                        <button onclick="getSummary({{ post.id }})">요약</button>
+                        <button onclick="displaySummary({{ post.id }}, '{{ post.summary }}')">요약</button>
                         <div id="summary-{{ post.id }}"></div>
                         <hr class="my-4" />
                     </div>
@@ -118,4 +106,3 @@
     <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>
-

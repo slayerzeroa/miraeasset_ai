@@ -41,8 +41,8 @@ def summary_easy_version(request):
 
 def get_summary(request, post_id):
     try:
-        summary = utils.summarize_detail(post_id)
-        return JsonResponse({'summary': summary})
+        summary_text = utils.summarize_detail(post_id)
+        return JsonResponse({'summary': summary_text})
     except Exception as e:
         return JsonResponse({'summary': 'Summary not found', 'error': str(e)}, status=404)
 

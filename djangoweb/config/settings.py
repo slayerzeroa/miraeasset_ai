@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "summary.apps.SummaryConfig",
     "matching.apps.MatchingConfig",
     "community.apps.CommunityConfig",
+    "mypage.apps.MypageConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -138,9 +139,19 @@ import pymysql
 
 pymysql.install_as_MySQLdb()
 
-DATABASES = {
+'''DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL')
     )
-}
+}'''
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_ADDRESS'),
+        'PORT': '3306',
+    }
+}

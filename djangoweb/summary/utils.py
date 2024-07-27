@@ -193,6 +193,7 @@ def crawling():
     news_data = []
 
     seen_titles = set()
+    idx = 0
     for keyword in keywords:
         news_titles, news_url, news_contents, news_dates = news_crawling(keyword)
         for idx, i in enumerate(range(len(news_titles))):
@@ -205,6 +206,7 @@ def crawling():
                     'date': news_dates[i],
                     'text': news_contents[i],
                 })
+                idx += 1
 
     news_summary_sorted = sorted(news_data, key=lambda x: x['date'], reverse=True)
 
