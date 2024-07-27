@@ -84,3 +84,32 @@ const PORT = 5556;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Fetch all data
+app.get("/pb", (req, res) => {
+  const results = [];
+  pool
+    .getConnection()
+    .then((conn) => {
+      conn
+        .query("SELECT * FROM pb")
+        .then((rows) => {
+          rows.forEach((row) => {
+            results.push(row);
+          });
+          res.json(results);
+        })
+        .finally(() => {
+          conn.release();
+        });
+    })
+    .catch((err) => {
+      console.error("Database connection error:", err);
+      res.status(500).json({ error: "Failed to connect to database" });
+    });
+});
+
+const PORT = 5556;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
