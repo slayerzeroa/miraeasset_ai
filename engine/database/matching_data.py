@@ -15,9 +15,9 @@ def generate_pb_info(pb_data):
     # 모든 정보를 한 문장으로 결합
     full_info = (
         f"PB는 {pb_data['Location']}에 거주하는 {pb_data['Age']}세 {pb_data['Gender']}입니다. "
-        f"전문 분야는 {', '.join(pb_data['Speciality'])}입니다. "
-        f"선호하는 고객 그룹은 {', '.join(pb_data['Preferred_client_group'])}입니다. "
-        f"선호하는 투자 주제는 {', '.join(pb_data['Preferred_Investment_Topics'])}입니다. "
+        f"전문 분야는 {pb_data['Speciality']}입니다. "
+        f"선호하는 고객 그룹은 {pb_data['Preferred_client_group']}입니다. "
+        f"선호하는 투자 주제는 {pb_data['Preferred_Investment_Topics']}입니다. "
         f"리스크 성향은 {pb_data['Risk_Tolerance']}이며, 선호하는 투자 규모는 {pb_data['Preferred_Size']:,}원입니다."
     )
     
@@ -30,10 +30,10 @@ def generate_customer_info(customer_data):
         f"고객은 {customer_data['Location']}에 거주하는 {customer_data['Age']}세 {customer_data['Gender']}입니다. "
         f"직업은 {customer_data['Job']}이며, 금융 이해도는 {customer_data['Financial_Literacy_Level']}입니다. "
         f"투자 성향은 {customer_data['Investment_Horizon']}이며, 리스크 성향은 {customer_data['Risk_Tolerance']}입니다. "
-        f"선호하는 투자 유형은 {', '.join(customer_data['Preferred_Investment_Types'])}입니다. "
-        f"총 투자 금액은 {customer_data['Investment_Amount']:,}원입니다. "
+        f"선호하는 투자 유형은 {customer_data['Preferred_Investment_Types']}입니다. "
+        f"총 투자 금액은 {customer_data['Investment_Amount']}원입니다. "
         f"과거 투자 경험은 {customer_data['Past_Investment_Experience']} 수준입니다. "
-        f"선호하는 투자 주제는 {', '.join(customer_data['Preferred_Investment_Topics'])}입니다. "
+        f"선호하는 투자 주제는 {customer_data['Preferred_Investment_Topics']}입니다. "
         f"포트폴리오는 다음과 같습니다: 채권 {customer_data['Portfolio_Bonds']}, 주식 {customer_data['Portfolio_Stocks']}, 부동산 {customer_data['Portfolio_House']}, 현금 {customer_data['Portfolio_Savings']}, 펀드 {customer_data['Portfolio_Funds']}입니다."
     )
     
@@ -104,13 +104,13 @@ def make_customer_table(df):
         "Gender": String(length=10),
         "Location": String(length=20),
         "Job": String(length=100),
-        "Financial_Literacy_Level": String(length=2000),
-        "Investment_Horizon": String(length=5000),
-        "Risk_Tolerance": String(length=5000),
-        "Preferred_Investment_Types": String(length=5000),
+        "Financial_Literacy_Level": Text(),
+        "Investment_Horizon": Text(),
+        "Risk_Tolerance": Text(),
+        "Preferred_Investment_Types": Text(),
         "Investment_Amount": Integer(),
-        "Past_Investment_Experience": String(length=5000),
-        "Preferred_Investment_Topics": String(length=5000),
+        "Past_Investment_Experience": Text(),
+        "Preferred_Investment_Topics": Text(),
         "Portfolio_Savings": Float(),
         "Portfolio_Bonds": Float(),
         "Portfolio_Stocks": Float(),
@@ -145,10 +145,10 @@ def make_pb_table(df):
         "Age": Integer(),
         "Gender": String(length=10),
         "Location": String(length=200),
-        "Speciality": String(length=5000),
-        "Preferred_client_group": String(length=2000),
-        "Preferred_Investment_Topics": String(length=5000),
-        "Risk_Tolerance": String(length=5000),
+        "Speciality": Text(),
+        "Preferred_client_group": Text(),
+        "Preferred_Investment_Topics": Text(),
+        "Risk_Tolerance": Text(),
         "Preferred_Size": Integer(),
     }
 
@@ -164,12 +164,17 @@ def generate_data():
     pb_data['description'] = pb_data.apply(generate_pb_info, axis=1)
     pb_data['embedding'] = pb_data['description'].apply(lambda x: get_sentence_embedding(x))
 
+    customer_data.to_csv('fix_embedding_matching_customer_data.csv', index=False)
+    pb_data.to_csv('fix_embedding_matching_pb_data.csv', index=False)
+
     make_customer_table(customer_data)
     make_pb_table(pb_data)
 
+customer_data = pd.read_csv('engine/data/fix_embedding_matching_customer_data.csv')
+pb_data = pd.read_csv('engine/data/fix_embedding_matching_pb_data.csv')
 
-generate_data()
-
+make_customer_table(customer_data.iloc[:, 1:])
+make_pb_table(pb_data.iloc[:, 1:])
 
 # customer_data, pb_data = load()
 
