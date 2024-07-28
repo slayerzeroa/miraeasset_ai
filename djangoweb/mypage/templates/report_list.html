@@ -33,7 +33,7 @@
               <span>{{ rep.id }}</span>
             </th>
             <td>
-              <a href="/pbreport/post/{{ rep.id }}">
+              <a href="/pbreport/pbpost/{{ rep.id }}">
                 <span>{{ rep.purpose }}</span>
               </a>
             </td>
@@ -52,7 +52,7 @@
         <div class="col-auto">
           <a class="btn btn-primary" id="write-post" role="button">글쓰기</a>
             <script>
-              document.getElementById('write-post').href = window.location.pathname + 'post';
+              document.getElementById('write-post').href = window.location.pathname + 'pbpost';
             </script>
         </div>
       </div>

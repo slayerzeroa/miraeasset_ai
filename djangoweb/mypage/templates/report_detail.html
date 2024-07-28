@@ -3,7 +3,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <title>게시판 - {{ board.title }}</title>
+    <title>{{ report.contact_time }} 의 상담 내역</title>
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
   </head>
   <body>
@@ -11,7 +11,7 @@
       <div class="navbar navbar-dark bg-dark shadow-sm mb-3">
         <div class="container d-flex justify-content-between">
           <a href="/" class="navbar-brand d-flex align-items-center">
-            <strong>게시판</strong>
+            <strong>보고서</strong>
           </a>
         </div>
       </div>
@@ -19,20 +19,23 @@
     <div class="container">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">{{ board.title }} - {{ board.author }}</h5>
+          <h5 class="card-title">접촉 목적 : {{ report.purpose }}</h5>
           <p class="card-text">
-            <small class="text-muted">{{ board.created_date | date:"Y-m-d h:i" }}</small>
+            <small class="text-muted">보안 : {{ report.security }}, 채널 : {{ report.channel }}</small>
           </p>
-          <p class="card-text">{{ board.content }}</p>
+          <p class="card-text">{{ report.content }}</p>
+            <br>
+          <p class="card-text">{{ report.future_task }}</p>
         </div>
       </div>
       <div class="row mt-3">
-        <div class="col-auto mr-auto"></div>
+      <div class="col-auto mr-auto"></div>
         <div class="col-auto">
-          <a class="btn btn-info" href="/post/edit/{{ board.id }}" role="button">수정</a>
+          <a class="btn btn-info" href="/post/edit/{{ report.id }}" role="button">수정</a>
         </div>
         <div class="col-auto">
-          <form id="delete-form" action="/post/delete/{{ board.id }}" method="post">
+          <form id="delete-form" action="{% url 'pbreport_delete' report.id %}" method="post">
+            {% csrf_token %}
             <input type="hidden" name="_method" value="delete" />
             <button id="delete-btn" type="submit" class="btn btn-danger">삭제</button>
           </form>

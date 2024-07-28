@@ -1,9 +1,11 @@
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic.edit import DeleteView
 
 from .models import *
 def pb_report_list(request):
-    report = {'pbreport': pbreport.objects.all()}
+    report = {'report': pbreport.objects.all()}
     return render(request, 'report_list.html', report)
 
 def pb_report_post(request):
@@ -34,3 +36,8 @@ def report_detail(request, id):
     except pbreport.DoesNotExist:
         raise Http404("Does not exist!")
     return render(request, 'report_detail.html', {'report': report})
+
+class PbreportDeleteView(DeleteView):
+    model = pbreport
+    success_url = reverse_lazy('report_list')
+    template_name = 'pbreport_confirm_delete.html'

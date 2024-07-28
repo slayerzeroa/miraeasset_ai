@@ -4,7 +4,7 @@ from django.shortcuts import render
 from .models import *
 def community(request):
     boards = {'boards': Board.objects.all()}
-    return render(request, 'report_list.html', boards)
+    return render(request, 'list.html', boards)
 
 def post(request):
     if request.method == "POST":
@@ -15,11 +15,11 @@ def post(request):
         board.save()
         return HttpResponseRedirect('/community/')
     else:
-        return render(request, 'report_post.html')
+        return render(request, 'post.html')
 
 def detail(request, id):
     try:
         board = Board.objects.get(pk=id)
     except Board.DoesNotExist:
         raise Http404("Does not exist!")
-    return render(request, 'report_detail.html', {'board': board})
+    return render(request, 'detail.html', {'board': board})

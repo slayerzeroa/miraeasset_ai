@@ -7,59 +7,6 @@ import os
 import re
 from tqdm import tqdm
 
-# 페이지 url 형식에 맞게 바꾸어 주는 함수 만들기
-  #입력된 수를 1, 11, 21, 31 ...만들어 주는 함수
-def makePgNum(num):
-    if num == 1:
-        return num
-    elif num == 0:
-        return num+1
-    else:
-        return num+9*(num-1)
-
-# 크롤링할 url 생성하는 함수 만들기(검색어, 크롤링 시작 페이지, 크롤링 종료 페이지)
-
-def makeUrl(search, start_pg, end_pg):
-    if start_pg == end_pg:
-        start_page = makePgNum(start_pg)
-        url = "https://search.naver.com/search.naver?where=news&sm=tab_pge&query=" + search + "&start=" + str(start_page)
-        print("생성url: ", url)
-        return url
-    else:
-        urls = []
-        for i in range(start_pg, end_pg + 1):
-            page = makePgNum(i)
-            url = "https://search.naver.com/search.naver?where=news&sm=tab_pge&query=" + search + "&start=" + str(page)
-            urls.append(url)
-        print("생성url: ", urls)
-        return urls
-
-# html에서 원하는 속성 추출하는 함수 만들기 (기사, 추출하려는 속성값)
-def news_attrs_crawler(articles,attrs):
-    attrs_content=[]
-    for i in articles:
-        attrs_content.append(i.attrs[attrs])
-    return attrs_content
-
-# ConnectionError방지
-headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/98.0.4758.102"}
-
-#html생성해서 기사크롤링하는 함수 만들기(url): 링크를 반환
-def articles_crawler(url):
-    #html 불러오기
-    original_html = requests.get(url,headers=headers)
-    html = BeautifulSoup(original_html.text, "html.parser")
-
-    url_naver = html.select("div.group_news > ul.list_news > li div.news_area > div.news_info > div.info_group > a.info")
-    url = news_attrs_crawler(url_naver,'href')
-    return url
-
-#제목, 링크, 내용 1차원 리스트로 꺼내는 함수 생성
-def makeList(newlist, content):
-    for i in content:
-        for j in i:
-            newlist.append(j)
-    return newlist
 
 class CompletionExecutor:
     def __init__(self, host, api_key, api_key_primary_val, request_id):
@@ -107,118 +54,44 @@ def search_keyword(customer_data):
     customer_interests = [customer_data['Preferred_Investment_Types'], customer_data['Preferred_Investment_Topics']]
     keywords = []
     for interest in customer_interests:
-        keywords.append(interest)
+        # Remove quotes and split by commas
+        cleaned_keywords = interest.replace("'", "").replace('"', '').split(', ')
+        keywords.extend(cleaned_keywords)
     return keywords
 
-
-def news_crawling(keyword):
-    # naver url 생성
-    start_page = 1
-    end_page = 2
-    url = makeUrl(keyword, start_page, end_page)  # start_page = 1, end_page = 2
-
-    # 뉴스 크롤러 실행
-    news_titles_ = []
-    news_url_ = []
-    news_contents_ = []
-    news_dates_ = []
-
-    if type(url) == list:  # url이 list이고 원소가 2개
-        for u in url:
-            u_1 = articles_crawler(u)
-            news_url_.append(u_1)
-    else:  # url이 하나
-        url = articles_crawler(url)
-        news_url_.append(url)
-
-    # 제목, 링크, 내용 담을 리스트 생성
-    news_url_1 = []
-    # 1차원 리스트로 만들기(내용 제외)
-    makeList(news_url_1, news_url_)
-
-    # NAVER 뉴스만 남기기
-    print("news_url_1 : ", news_url_1)
-    final_urls = []
-    for i in tqdm(range(len(news_url_1))):
-        if "news.naver.com" in news_url_1[i]:
-            final_urls.append(news_url_1[i])
-        else:
-            pass
-
-    for i in tqdm(final_urls):
-        # 각 기사 html get하기
-        news = requests.get(i, headers=headers)
-        news_html = BeautifulSoup(news.text, "html.parser")
-
-        # 뉴스 제목 가져오기
-        title = news_html.select_one("#ct > div.media_end_head.go_trans > div.media_end_head_title > h2")
-        if title == None:
-            title = news_html.select_one("#content > div.end_ct > div > h2")
-
-        # 뉴스 본문 가져오기
-        content = news_html.select("article#dic_area")
-        if content == []:
-            content = news_html.select("#articeBody")
-
-        content = ''.join(str(content))
-
-        # html태그제거 및 텍스트 다듬기
-        pattern1 = '<[^>]*>'
-        title = re.sub(pattern=pattern1, repl='', string=str(title))
-        content = re.sub(pattern=pattern1, repl='', string=content)
-        pattern2 = """[\n\n\n\n\n// flash 오류를 우회하기 위한 함수 추가\nfunction _flash_removeCallback() {}"""
-        content = content.replace(pattern2, '')
-
-        news_titles_.append(title)
-        news_contents_.append(content)
-
-        try:
-            html_date = news_html.select_one(
-                "div#ct> div.media_end_head.go_trans > div.media_end_head_info.nv_notrans > div.media_end_head_info_datestamp > div > span")
-            news_date = html_date.attrs['data-date-time']
-        except AttributeError:
-            news_date = news_html.select_one("#content > div.end_ct > div > div.article_info > span > em")
-            news_date = re.sub(pattern=pattern1, repl='', string=str(news_date))
-        # 날짜 가져오기
-        news_dates_.append(news_date)
-    return news_titles_, final_urls, news_contents_, news_dates_
-
-
-def crawling():
-    # 키워드 검색할 요소 수집
+def make_news_list():
+    raw_news_data = request_url('http://ajoufe.iptime.org:5556/news')
     customer_data = request_url("http://ajoufe.iptime.org:5556/customer")[0]  # 고객 데이터 불러오기
+
     keywords = search_keyword(customer_data)
     print(keywords)
 
+    # Extract news data where the Keyword is in the extracted keywords
     news_data = []
-
     seen_titles = set()
-    idx = 0
-    for keyword in keywords:
-        news_titles, news_url, news_contents, news_dates = news_crawling(keyword)
-        for idx, i in enumerate(range(len(news_titles))):
-            if news_titles[i] not in seen_titles:
-                seen_titles.add(news_titles[i])
+
+    for news_item in raw_news_data:
+        if news_item['Keyword'] in keywords:
+            news_title = news_item['Title']
+            if news_title not in seen_titles:
+                seen_titles.add(news_title)
                 news_data.append({
-                    'id': idx,
-                    'title': news_titles[i],
-                    'url': news_url[i],
-                    'date': news_dates[i],
-                    'text': news_contents[i],
+                    'id': news_item['Index'],
+                    'title': news_title,
+                    'url': news_item['Url'],
+                    'date': news_item['Date'],
+                    'text': news_item['Text'],
                 })
-                idx += 1
 
     news_summary_sorted = sorted(news_data, key=lambda x: x['date'], reverse=True)
+    print(len(news_summary_sorted))
 
-    # 파일을 summary/static 폴더에 저장
-    static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
-    summary_static_dir = os.path.join(static_dir, 'summary')
-    if not os.path.exists(summary_static_dir):
-        os.makedirs(summary_static_dir)
-    file_path = os.path.join(summary_static_dir, 'news_crawling_sorted.json')
-
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open('summary/static/summary/customer_news_data.json', 'w', encoding='utf-8') as f:
         json.dump(news_summary_sorted, f, ensure_ascii=False, indent=4)
+    print('Json파일로 저장되었습니다')
+
+    return news_summary_sorted
+
 
 def summarize_detail(id):
     # api
@@ -230,8 +103,7 @@ def summarize_detail(id):
     )
 
     # json파일에서 클릭된 뉴스의 id를 조회 -> 해당 id에 속하는 뉴스 text 가져오기
-    json_path = 'summary/static/summary/news_crawling_sorted.json'
-    #id = 11
+    json_path = 'summary/static/summary/customer_news_data.json'
     news_crawling_json = pd.read_json(json_path, orient="records")
     news_text = news_crawling_json[news_crawling_json['id'] == id]['text'].values[0]
 

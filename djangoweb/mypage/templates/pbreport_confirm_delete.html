@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>삭제 확인</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}" />
+  </head>
+  <body>
+    <header>
+      <div class="navbar navbar-dark bg-dark shadow-sm mb-3">
+        <div class="container d-flex justify-content-between">
+          <a href="/" class="navbar-brand d-flex align-items-center">
+            <strong>보고서</strong>
+          </a>
+        </div>
+      </div>
+    </header>
+    <div class="container">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">정말로 '{{ object.purpose }}' 보고서를 삭제하시겠습니까?</h5>
+          <form method="post">{% csrf_token %}
+            <button type="submit" class="btn btn-danger">삭제</button>
+            <a href="{% url 'report_list' %}" class="btn btn-secondary">취소</a>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+  </body>
+</html>
