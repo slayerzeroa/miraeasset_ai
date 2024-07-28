@@ -37,8 +37,8 @@
 
 #### Docker 배포
 
-- docker build -t psyduck0/miraeassets_web:latest .
-- docker push psyduck0/miraeassets_web:latest
+- docker build -t psyduck0/miraeasset_web:latest .
+- docker push psyduck0/miraeasset_web:latest
 
 ---
 
