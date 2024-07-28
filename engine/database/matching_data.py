@@ -23,6 +23,20 @@ def generate_pb_info(pb_data):
     
     return full_info
 
+def generate_customer_info_for_pb(customer_data):
+    # 모든 정보를 한 문장으로 결합
+    full_info = (
+        f"고객은 {customer_data['Location']}에 거주하는 {customer_data['Age']}세 {customer_data['Gender']}입니다. "
+        f"직업은 {customer_data['Job']}이며, 투자 성향은 {customer_data['Investment_Horizon']}입니다. "
+        f"선호하는 투자 주제는 {customer_data['Preferred_Investment_Topics']}이며, "
+        f"리스크 성향은 {customer_data['Risk_Tolerance']}입니다. "
+        f"선호하는 투자 유형은 {customer_data['Preferred_Investment_Types']}이고, "
+        f"투자 금액은 {customer_data['Investment_Amount']:,}원입니다."
+    )
+    
+    return full_info
+
+
 
 def generate_customer_info(customer_data):
     # 모든 정보를 한 문장으로 결합
@@ -68,8 +82,8 @@ PB Data str to list
 '''
 
 def load():
-    customer_data = pd.read_csv('djangoweb/matching/static/data/matching_customer_data.csv')
-    pb_data = pd.read_csv('djangoweb/matching/static/data/matching_pb_data.csv')
+    customer_data = pd.read_csv('C:/Users/slaye/VscodeProjects/miraeasset-ai/engine/data/matching_customer_data.csv')
+    pb_data = pd.read_csv('C:/Users/slaye/VscodeProjects/miraeasset-ai/engine/data/matching_pb_data.csv')
 
     customer_data['Preferred_Investment_Types'] = customer_data['Preferred_Investment_Types'].apply(lambda x: x[1:-1])
     customer_data['Preferred_Investment_Topics'] = customer_data['Preferred_Investment_Topics'].apply(lambda x: x[1:-1])
@@ -116,8 +130,8 @@ def make_customer_table(df):
         "Portfolio_Stocks": Float(),
         "Portfolio_House": Float(),
         "Portfolio_Funds": Float(),
-        "description": Text(),
-        "embedding": Text()
+        "Description": Text(),
+        "Embedding": Text()
     }
 
     # Save dataframe to the database
@@ -150,41 +164,90 @@ def make_pb_table(df):
         "Preferred_Investment_Topics": Text(),
         "Risk_Tolerance": Text(),
         "Preferred_Size": Integer(),
+        "Description": Text(),
+        "Embedding": Text()
     }
 
     # Save dataframe to the database
     df.to_sql("pb", ENGINE, if_exists='append', index=False, dtype=dtype)
     print("Database update complete!")
 
+
+def make_news_table(df):
+    '''
+    데이터베이스에 고객 테이블을 만드는 함수.
+    '''
+    print("Updating news table to DataBase...")
+
+    # Load environment variables
+    load_dotenv()
+    _GOGH_USER = os.environ.get("DB_USER")
+    _GOGH_PASSWORD = os.environ.get("DB_PASSWORD")
+    _GOGH_ADDRESS = os.environ.get("DB_ADDRESS")
+    _GOGH_PORT = '3306'
+    _GOGH_DB = os.environ.get("DB_NAME")
+    _GOGH_URL = f'mysql+pymysql://{_GOGH_USER}:{up.quote_plus(_GOGH_PASSWORD)}@{_GOGH_ADDRESS}:{_GOGH_PORT}/{_GOGH_DB}?charset=utf8mb4'
+    ENGINE = create_engine(_GOGH_URL, echo=False, pool_recycle=3600, poolclass=NullPool)
+
+    # Define data types for columns
+    dtype = {
+        "Keyword": Text(),
+        "Title": Text(),
+        "Text": Text(),
+        "Url": Text(),
+        "Date": Text(),
+    }
+
+    # Save dataframe to the database
+    df.to_sql("news", ENGINE, if_exists='append', index=False, dtype=dtype)
+    print("Database update complete!")
+
+
+
+
+
 # 고객 설명과 임베딩 생성
 def generate_data():
     customer_data, pb_data = load()
-    customer_data['description'] = customer_data.apply(generate_customer_info, axis=1)
-    customer_data['embedding'] = customer_data['description'].apply(lambda x: get_sentence_embedding(x))
-    pb_data['description'] = pb_data.apply(generate_pb_info, axis=1)
-    pb_data['embedding'] = pb_data['description'].apply(lambda x: get_sentence_embedding(x))
+    customer_data['Description'] = customer_data.apply(generate_customer_info, axis=1)
+    customer_data['Embedding'] = customer_data['Description'].apply(lambda x: get_sentence_embedding(x))
+    customer_data['Description_Matching'] = customer_data.apply(generate_customer_info_for_pb, axis=1)
+    customer_data['Embedding_Matching'] = customer_data['Description_Matching'].apply(lambda x: get_sentence_embedding(x))
+    
+    pb_data['Description'] = pb_data.apply(generate_pb_info, axis=1)
+    pb_data['Embedding'] = pb_data['Description'].apply(lambda x: get_sentence_embedding(x))
 
     customer_data.to_csv('fix_embedding_matching_customer_data.csv', index=False)
     pb_data.to_csv('fix_embedding_matching_pb_data.csv', index=False)
 
-    make_customer_table(customer_data)
-    make_pb_table(pb_data)
+    make_customer_table(customer_data.iloc[:, 1:])
+    make_pb_table(pb_data.iloc[:, 1:])
 
-customer_data = pd.read_csv('engine/data/fix_embedding_matching_customer_data.csv')
-pb_data = pd.read_csv('engine/data/fix_embedding_matching_pb_data.csv')
+pd.set_option('display.max_columns', None)
+df = pd.read_json("C:/Users/slaye/VscodeProjects/miraeasset-ai/engine/data/news_crawling_sorted.json")
+df = df.iloc[:, 1:]
+df.columns = ['Keyword', 'Title', 'Text', 'Url', 'Date']
+make_news_table(df)
 
-make_customer_table(customer_data.iloc[:, 1:])
-make_pb_table(pb_data.iloc[:, 1:])
 
-# customer_data, pb_data = load()
 
-# pd.set_option('display.max_columns', None)
-# # print(customer_data)
-# print(pb_data)
+# generate_data()
 
-# pd.set_option('display.max_columns', None)
+# # customer_data = pd.read_csv('engine/data/fix_embedding_matching_customer_data.csv')
+# # pb_data = pd.read_csv('engine/data/fix_embedding_matching_pb_data.csv')
 
-# customer_data, pb_data = load()
-# # print(customer_data.head())
-# print(generate_customer_info(customer_data.iloc[0]))
-# print(generate_pb_info(pb_data.iloc[0]))
+# # make_customer_table(customer_data.iloc[:, 1:])
+# # make_pb_table(pb_data.iloc[:, 1:])
+
+# # customer_data, pb_data = load()
+
+# # pd.set_option('display.max_columns', None)
+# # # print(customer_data)
+# # print(pb_data)
+
+# # pd.set_option('display.max_columns', None)
+
+# # customer_data, pb_data = load()
+# # # print(customer_data.head())
+# # print(generate_customer_info(customer_data.iloc[0]))
+# # print(generate_pb_info(pb_data.iloc[0]))
