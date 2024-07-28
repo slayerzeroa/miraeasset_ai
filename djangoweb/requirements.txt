@@ -5,3 +5,5 @@ dj-database-url
 django-bootstrap4
 numpy
 pandas
+requests
+tqdm
