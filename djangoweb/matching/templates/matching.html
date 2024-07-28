@@ -13,8 +13,50 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <style>
+            /* 로딩 스피너 스타일 */
+            .spinner-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+                z-index: 999;
+                height: 100%;
+                width: 100%;
+                top: 0;
+                left: 0;
+                background-color: rgba(255, 255, 255, 0.7);
+                flex-direction: column;
+            }
+
+            .spinner {
+                height: 2em;
+                width: 2em;
+                border: 0.3em solid rgba(0, 0, 0, 0.2);
+                border-top: 0.3em solid #000;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 1em;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .spinner-text {
+                font-size: 1.2em;
+                color: #000;
+                text-align: center;
+            }
+        </style>
     </head>
     <body>
+        <!-- 로딩 스피너 -->
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="spinner-text">고객 데이터를 기반으로 적합한 PB를 매칭 중입니다</div>
+        </div>
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container px-5">
@@ -62,7 +104,7 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-6 mb-4">
                             <div class="card h-100">
-                                <img src="{% static 'assets/img/pb1.jpg' %}" class="card-img-top" alt="PB 최선화">
+                                <img src="{% static 'assets/img/pb5.jpg' %}" class="card-img-top" alt="PB 최선화">
                                 <div class="card-body">
                                     <h5 class="card-title">PB 최선화</h5>
                                     <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
@@ -118,5 +160,13 @@
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+        <script>
+            // 페이지 로드가 완료되면 스피너를 3초 동안 표시한 후 숨기기
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(function() {
+                    document.querySelector('.spinner-container').style.display = 'none';
+                }, 3000);
+            });
+        </script>
     </body>
 </html>
