@@ -123,7 +123,7 @@ app.get("/news", (req, res) => {
         });
     })
     .catch((err) => {
-      console.error("Database connection errors:", err);
+      console.error("Database connection error:", err);
       res.status(500).json({ error: "Failed to connect to database" });
     });
 });
