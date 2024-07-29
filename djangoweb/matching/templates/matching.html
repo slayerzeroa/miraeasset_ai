@@ -49,6 +49,11 @@
                 color: #000;
                 text-align: center;
             }
+
+            header.masthead {
+                margin: 0;
+                padding: 3rem;
+            }
         </style>
     </head>
     <body>
@@ -56,6 +61,10 @@
         <div class="spinner-container">
             <div class="spinner"></div>
             <div class="spinner-text">고객 데이터를 기반으로 적합한 PB를 매칭 중입니다</div>
+        </div>
+        <div class="spinner-container" id="spinner" style="display: none;">
+            <div class="spinner"></div>
+            <div class="spinner-text">PB를 매칭 시도 중입니다</div>
         </div>
         <!-- Responsive navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -141,7 +150,7 @@
                                     <h5 class="card-title">PB {{ pb.Name }}</h5>
                                     <p class="card-text">{{ pb.Description }}</p>
                                     <p class="card-text">Rating: {{ pb.Rating }}</p>
-                                    <a href="#" class="btn btn-primary">Button</a>
+                                    <a class="btn btn-primary" onclick="showSpinner()">Button</a>
                                 </div>
                             </div>
                         </div>
@@ -171,6 +180,23 @@
                     document.querySelector('.spinner-container').style.display = 'none';
                 }, 3000);
             });
+
+            function showSpinner() {
+                // 스피너를 보여줌
+                var spinner = document.getElementById('spinner');
+                if (spinner) {
+                    spinner.style.display = 'flex';
+
+                    // 3초 후에 스피너를 숨기고 알림을 표시
+                    setTimeout(function() {
+                        spinner.style.display = 'none';
+                        alert('매칭 신청이 완료되었습니다.');
+                        window.location.href = "{% url 'main' %}"; // 메인 페이지 URL로 리디렉션
+                    }, 3000);
+                } else {
+                    console.error("Spinner element not found");
+                }
+            }
         </script>
     </body>
 </html>
