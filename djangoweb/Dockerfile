@@ -10,6 +10,7 @@ WORKDIR /djangoweb
 COPY requirements.txt /djangoweb/
 RUN pip install --no-cache-dir -r requirements.txt
 
+
 # 애플리케이션 소스 코드 복사
 COPY . /djangoweb/
 

@@ -1,6 +1,7 @@
-# from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pandas as pd
+import requests
 
 # from sentence_transformers import SentenceTransformer
 
@@ -96,6 +97,73 @@ class marriage_algo():
 
 #     return matches
 
+def str2list(string:str) -> list:
+    '''
+    문자열을 리스트로 변환하는 함수
+    '''
+    return string.split(',')
+
+
+def pb_customer_cosine_matching(pb_json:list, customer_json:list, rank:int=4) -> list:
+    '''
+    PB와 Customer의 선호 Query를 비교하여 가장 유사한 매칭을 찾는 함수
+    rank는 상위 몇개를 뽑을지 선택
+    input: pb_json, customer_json, rank
+    output: matches (customer_idx, pb_idx, similarity)
+    '''
+
+    # PB 정보
+    pb_vector = []
+    pb_rating = []
+    for pb in pb_json:
+        pb_vector.append(list(map(float, str2list(pb['Embedding']))))
+        pb_rating.append(float(pb['Rating']))
+    # pb 별점
+    pb_rating = np.array(pb_rating)
+
+    customer_vector = [list(map(float, str2list(customer_json['Embedding'])))]
+
+    similarity_matrix = cosine_similarity(customer_vector, pb_vector)
+    # print(similarity_matrix)
+
+    # 유사도 매트릭스에 별점을 곱하여 가중치 부여
+    similarity_matrix = similarity_matrix * pb_rating
+
+    # 코사인 유사도 매트릭스를 통해 각 고객과 가장 유사한 PB를 찾기
+    matches = []
+    for customer_idx, customer_similarities in enumerate(similarity_matrix):
+        top_pb_indices = np.argsort(customer_similarities)[-rank:][::-1]  # 상위 4개의 인덱스
+        for pb_idx in top_pb_indices:
+            matches.append((customer_idx, pb_idx, customer_similarities[pb_idx]))
+
+    return matches
+
+pb_json = requests.get('http://ajoufe.iptime.org:5556/pb').json()
+customer_json = requests.get('http://ajoufe.iptime.org:5556/customer').json()
+
+customer_json = customer_json[2]
+
+pb_vector = []
+for pb in pb_json:
+    pb_vector.append(list(map(float, str2list(pb['Embedding']))))
+
+customer_vector = [list(map(float, str2list(customer_json['Embedding'])))]
+
+
+def get_pb_data(matches):
+    pb_data = []
+    for match in matches:
+        pb_data.append(pb_json[match[1]-1])
+    pb_data = pd.DataFrame(pb_data)
+    return pb_data
+
+def test_get_pb_data():
+    matches = pb_customer_cosine_matching(pb_json, customer_json)
+    print(get_pb_data(matches))
+    return get_pb_data(matches)
+
+# print(pb_customer_cosine_matching(pb_json, customer_json))
+# print(get_pb_data(pb_customer_cosine_matching(pb_json, customer_json)))
 
 # def pb_customer_prefer(pb:list, customer:list) -> list:
 #     '''
