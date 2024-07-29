@@ -6,6 +6,8 @@ import json
 # from .matching_algorithm.matching import test
 from django.shortcuts import get_object_or_404, redirect
 
+from .matching_algorithm.matching_pb import *
+
 
 '''def index(request):
     news_list = crawling.objects.order_by('-date')
@@ -31,7 +33,10 @@ def easy_news(request) :
 
 
 def matching(request) :
-    return render(request, 'matching.html')
+    result_df = test_get_pb_data()
+    result_json = result_df.to_json(orient='records', force_ascii=False)
+    result = json.loads(result_json)
+    return render(request, 'matching.html', {'result': result})
 
 def graph(request):
     # customer_ids = [1, 2, 3]

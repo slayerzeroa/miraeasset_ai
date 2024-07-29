@@ -124,7 +124,7 @@ def pb_customer_cosine_matching(pb_json:list, customer_json:list, rank:int=4) ->
     customer_vector = [list(map(float, str2list(customer_json['Embedding'])))]
 
     similarity_matrix = cosine_similarity(customer_vector, pb_vector)
-    print(similarity_matrix)
+    # print(similarity_matrix)
 
     # 유사도 매트릭스에 별점을 곱하여 가중치 부여
     similarity_matrix = similarity_matrix * pb_rating
@@ -150,10 +150,6 @@ for pb in pb_json:
 customer_vector = [list(map(float, str2list(customer_json['Embedding'])))]
 
 
-print(pb_customer_cosine_matching(pb_json, customer_json))
-
-
-
 def get_pb_data(matches):
     pb_data = []
     for match in matches:
@@ -161,7 +157,13 @@ def get_pb_data(matches):
     pb_data = pd.DataFrame(pb_data)
     return pb_data
 
-print(get_pb_data(pb_customer_cosine_matching(pb_json, customer_json)))
+def test_get_pb_data():
+    matches = pb_customer_cosine_matching(pb_json, customer_json)
+    print(get_pb_data(matches))
+    return get_pb_data(matches)
+
+# print(pb_customer_cosine_matching(pb_json, customer_json))
+# print(get_pb_data(pb_customer_cosine_matching(pb_json, customer_json)))
 
 # def pb_customer_prefer(pb:list, customer:list) -> list:
 #     '''

@@ -78,28 +78,14 @@
                     <div class="col-xl-6">
                         <div class="text-center text-white">
                             <!-- Page heading-->
-                            <h1 class="mb-5">관심있는 키워드를 넣어주세요!</h1>
-                            <!-- Signup form-->
-                            <form class="form-subscribe" id="contactForm" method="post" action="{% url 'matching' %}">
-                                {% csrf_token %}
-                                <!-- Text input-->
-                                <div class="row">
-                                    <div class="col">
-                                        <input class="form-control form-control-lg" id="textInput" name="text_input" type="text" placeholder="Enter your keyword" required />
-                                        <div class="invalid-feedback text-white">This field is required.</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button class="btn btn-primary btn-lg" id="submitButton" type="submit" href="{% url 'graph' %}">Submit</button>
-                                    </div>
-                                </div>
-                            </form>
+                            <h1 class="mb-5">PB 매칭 서비스</h1>        
                             <div>
                                 <a href="{% url 'graph' %}">그래프 보기</a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- PB 카드 -->
+                <!-- PB 카드
                 <div class="container mt-5">
                     <div class="row justify-content-center">
                         <div class="col-lg-6 mb-4">
@@ -142,6 +128,24 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div> -->
+
+                <div class="container mt-5">
+                    <div class="row justify-content-center">
+                        {% for pb in result %}
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <img src="{% static 'assets/img/pb' %}{{ forloop.counter }}.jpg" class="card-img-top" alt="PB {{ pb.Name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">PB {{ pb.Name }}</h5>
+                                    <p class="card-text">{{ pb.Description }}</p>
+                                    <p class="card-text">Rating: {{ pb.Rating }}</p>
+                                    <a href="#" class="btn btn-primary">Button</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

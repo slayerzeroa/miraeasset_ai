@@ -1,4 +1,4 @@
-from matching import marriage_algo, pb_customer_prefer, pb_customer_cosine_matching
+from engine.matching_algorithm.matching_pb import marriage_algo, pb_customer_prefer, pb_customer_cosine_matching
 import streamlit as st
 import visualize as vis
 
