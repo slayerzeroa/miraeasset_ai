@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from config.views import home
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', home, name='main'),
@@ -11,3 +13,6 @@ urlpatterns = [
     path("community/", include("community.urls"), name='community'),
     path("pbreport/", include("mypage.urls"), name='pbreport'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
