@@ -6,10 +6,6 @@
 
 - cd engine/matching_algorithm -> streamlit run test.py
 
-#### Django 설치
-
-- pip install django
-
 #### Django 실행
 
 - cd web/mysite -> python manage.py runserver
@@ -47,20 +43,23 @@
 <!-- prettier-ignore-start -->
 ```
 ├─engine
-│  ├─clustering_algorithm
-│  ├─data
-│  └─matching_algorithm
+│   ├─clustering_algorithm
+│   ├─data
+│   └─matching_algorithm
+│   └─matching_reason
+├─report_standardization
 ├─summary
-│   ├─ClovaX_Executor
-│   ├─crawling_module
-│   └─뉴스요약
+│   ├─news_crawling
+│   ├─news_summary
 └─web
-    ├─mysite
-    │  ├─config
-    │  └─pybo
-    │      ├─static
-    │      │  └─public
-    │      └─templates
-    └─resource
+│   ├─mysite
+│   │  ├─config
+│   │  └─pybo
+│   │      ├─static
+│   │      │  └─public
+│   │      └─templates
+│   └─resource
+└─youtube_recommendation
+    └─youtube_sorting
 ```
 <!-- prettier-ignore-end -->
