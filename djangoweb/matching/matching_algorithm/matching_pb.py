@@ -2,6 +2,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pandas as pd
 import requests
+from .matching_reason import *
 
 # from sentence_transformers import SentenceTransformer
 
@@ -149,18 +150,52 @@ for pb in pb_json:
 
 customer_vector = [list(map(float, str2list(customer_json['Embedding'])))]
 
+import asyncio
+import aiohttp
 
-def get_pb_data(matches):
-    pb_data = []
-    for match in matches:
-        pb_data.append(pb_json[match[1]-1])
+async def get_pb_data(matches):
+    async def fetch_pb_data(session, match):
+        part = pb_json[match[1] - 1]
+        customer_sentence = customer_json['Description_Matching']
+        pb_sentence = pb_json[match[1] - 1]['Description']
+        reason = get_matching_reason(customer_sentence, pb_sentence)
+        part['Reason'] = reason
+        return part
+
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_pb_data(session, match) for match in matches]
+        pb_data = await asyncio.gather(*tasks)
+
     pb_data = pd.DataFrame(pb_data)
     return pb_data
+
+# def get_pb_data(matches):
+#     pb_data = []
+#     for match in matches:
+#         part = pb_json[match[1]-1]
+#         customer_sentence = customer_json['Description_Matching']
+#         pb_sentence = pb_json[match[1]-1]['Description']
+#         reason = get_matching_reason(customer_sentence, pb_sentence)
+#         part['Reason'] = reason
+#         pb_data.append(part)
+        
+#     pb_data = pd.DataFrame(pb_data)
+#     return pb_data
 
 def test_get_pb_data():
     matches = pb_customer_cosine_matching(pb_json, customer_json)
     print(get_pb_data(matches))
     return get_pb_data(matches)
+
+
+async def async_get_pb_data():
+    matches = pb_customer_cosine_matching(pb_json, customer_json)
+    pb_data = await get_pb_data(matches)
+    return pb_data
+
+# asyncio.run(main())
+
+# print(test_get_pb_data())
 
 # print(pb_customer_cosine_matching(pb_json, customer_json))
 # print(get_pb_data(pb_customer_cosine_matching(pb_json, customer_json)))

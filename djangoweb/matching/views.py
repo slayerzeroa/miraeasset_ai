@@ -32,10 +32,11 @@ def easy_news(request) :
     return render(request, 'easy_news.html')
 
 
-def matching(request) :
-    result_df = test_get_pb_data()
+async def matching(request) :
+    result_df = await async_get_pb_data()
     result_json = result_df.to_json(orient='records', force_ascii=False)
     result = json.loads(result_json)
+
     return render(request, 'matching.html', {'result': result})
 
 def graph(request):
