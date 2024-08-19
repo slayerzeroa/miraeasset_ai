@@ -32,8 +32,9 @@ def easy_news(request) :
     return render(request, 'easy_news.html')
 
 
-async def matching(request) :
-    result_df = await async_get_pb_data()
+def matching(request) :
+    matches = pb_customer_cosine_matching(pb_json, customer_json)
+    result_df = get_pb_data(matches)
     result_json = result_df.to_json(orient='records', force_ascii=False)
     result = json.loads(result_json)
 

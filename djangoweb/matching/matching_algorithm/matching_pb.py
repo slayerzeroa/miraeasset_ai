@@ -150,11 +150,8 @@ for pb in pb_json:
 
 customer_vector = [list(map(float, str2list(customer_json['Embedding'])))]
 
-import asyncio
-import aiohttp
-
-async def get_pb_data(matches):
-    async def fetch_pb_data(session, match):
+def get_pb_data(matches):
+    def fetch_pb_data(match):
         part = pb_json[match[1] - 1]
         customer_sentence = customer_json['Description_Matching']
         pb_sentence = pb_json[match[1] - 1]['Description']
@@ -162,12 +159,9 @@ async def get_pb_data(matches):
         part['Reason'] = reason
         return part
 
-    async with aiohttp.ClientSession() as session:
-        tasks = [fetch_pb_data(session, match) for match in matches]
-        pb_data = await asyncio.gather(*tasks)
-
-    pb_data = pd.DataFrame(pb_data)
-    return pb_data
+    pb_data = [fetch_pb_data(match) for match in matches]
+    pb_data_df = pd.DataFrame(pb_data)
+    return pb_data_df
 
 # def get_pb_data(matches):
 #     pb_data = []

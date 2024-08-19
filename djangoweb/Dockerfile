@@ -23,4 +23,4 @@ EXPOSE 5555
 
 # 애플리케이션 실행 명령어
 # CMD ["gunicorn", "--bind", "0.0.0.0:5555", "config.wsgi:application"]
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:5555", "--workers", "3", "--timeout", "30"]
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:5555", "--workers", "3", "--timeout", "300"]
